@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box de Sonrisas - Tortas y Postres</title>
+
+    <!-- Estilos y Fuentes -->
+    <style>
+        /* --- FUENTES DE GOOGLE --- */
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600;700&display=swap');
+        /* --- LIBRERÍA PARA ANIMACIONES (AOS) --- */
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css');
+
+        /* --- VARIABLES DE COLOR (Basadas en tu logo) --- */
+        :root {
+            --color-primario: #f4a5bA;
+            /* Rosa principal del logo */
+            --color-secundario: #e87fa1;
+            /* Un rosa un poco más oscuro */
+            --color-texto: #4f4f4f;
+            /* Gris oscuro para texto legible */
+            --color-fondo: #fff9fb;
+            /* Un fondo blanco-rosado muy sutil */
+            --color-blanco: #ffffff;
+        }
+
+        /* --- ESTILOS GENERALES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Pacifico', cursive;
+            color: var(--color-secundario);
+            font-weight: normal;
+        }
+
+        /* --- HEADER Y LOGO --- */
+        .header {
+            background: var(--color-blanco);
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header img.logo {
+            max-width: 150px;
+            /* Tamaño del logo */
+            height: auto;
+        }
+
+        /* --- SECCIÓN DE BIENVENIDA --- */
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            background-image: linear-gradient(to top, var(--color-fondo), var(--color-blanco));
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+        }
+
+        /* --- SECCIÓN DE PRODUCTOS --- */
+        #productos {
+            padding: 4rem 0;
+        }
+
+        #productos h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--color-blanco);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(232, 127, 161, 0.2);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-info h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: var(--color-secundario);
+        }
+
+        .product-info p {
+            margin: 0.5rem 0 1rem;
+            flex-grow: 1;
+        }
+
+        .btn-add-cart {
+            background-image: linear-gradient(45deg, var(--color-primario), var(--color-secundario));
+            color: var(--color-blanco);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-add-cart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(232, 127, 161, 0.4);
+        }
+
+        /* --- CARRITO FLOTANTE Y CONTADOR --- */
+        .cart-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background-image: linear-gradient(45deg, var(--color-secundario), var(--color-primario));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+        }
+
+        .cart-icon {
+            width: 35px;
+            height: 35px;
+            fill: var(--color-blanco);
+        }
+
+        #cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        /* --- MODAL (VENTANA EMERGENTE DEL CARRITO Y CHECKOUT) --- */
+        .modal {
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--color-fondo);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #555;
+        }
+
+        .modal h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        #cart-items-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        #cart-items-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+
+        #empty-cart-message {
+            text-align: center;
+            color: #888;
+            padding: 2rem 0;
+        }
+
+        .btn-checkout {
+            width: 100%;
+        }
+
+        /* --- FORMULARIO DE CHECKOUT --- */
+        #checkout-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        #checkout-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--color-secundario);
+        }
+
+        #checkout-form input,
+        #checkout-form select,
+        #checkout-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        #checkout-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-whatsapp {
+            width: 100%;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            background: var(--color-secundario);
+            color: var(--color-blanco);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ======== HEADER ======== -->
+    <header class="header">
+        <!-- PERSONALIZAR AQUÍ: Coloca la ruta a tu logo. Si no tienes uno aún, puedes descomentar el texto h1 -->
+        <img src="./img/logo.png" alt="Logo Box de Sonrisas" class="logo">
+        <!-- <h1>Box de Sonrisas</h1> -->
+    </header>
+
+    <main>
+        <!-- ======== SECCIÓN DE BIENVENIDA ======== -->
+        <section class="hero">
+            <div class="container">
+                <h1>Tu Dosis de Alegría</h1>
+                <p>Las tortas y postres más deliciosos, hechos con amor para crear sonrisas.</p>
+            </div>
+        </section>
+
+        <!-- ======== SECCIÓN DE PRODUCTOS ======== -->
+        <section id="productos">
+            <div class="container">
+                <h2>Nuestras Creaciones</h2>
+                <div class="product-grid" id="product-list">
+                    <!-- Los productos se cargarán aquí desde JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ======== CARRITO FLOTANTE ======== -->
+    <div class="cart-fab" id="cart-fab">
+        <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+            <path
+                d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z" />
+        </svg>
+        <span id="cart-count">0</span>
+    </div>
+
+    <!-- ======== MODAL DEL CARRITO ======== -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-cart-btn">×</span>
+            <h2>Mi Pedido</h2>
+            <ul id="cart-items-list">
+                <!-- Los ítems del carrito se agregan aquí -->
+            </ul>
+            <p id="empty-cart-message">Tu carrito de sonrisas está vacío.</p>
+            <button class="btn-add-cart btn-checkout" id="checkout-btn" style="display: none;">Continuar con el
+                Pedido</button>
+        </div>
+    </div>
+
+    <!-- ======== MODAL DE CHECKOUT (DATOS) ======== -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-checkout-btn">×</span>
+            <h2>Información para tu Pedido</h2>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="nombre">Nombre y Apellido</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="entrega">Dirección (o escribe "Retiro por el local")</label>
+                    <input type="text" id="entrega" name="entrega" required>
+                </div>
+                <div class="form-group">
+                    <label for="pago">¿Cómo pagas?</label>
+                    <select id="pago" name="pago" required>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Efectivo">Efectivo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="anotaciones">Anotaciones (ej: no funciona timbre, pago con $2000, etc.)</label>
+                    <textarea id="anotaciones" name="anotaciones"></textarea>
+                </div>
+                <button type="submit" class="btn-add-cart btn-whatsapp">Enviar Pedido por WhatsApp</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======== FOOTER ======== -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Box de Sonrisas. Creado con ❤️.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Inicializar librería de animaciones
+        AOS.init({
+            duration: 800, // Duración de la animación
+            once: true,    // Animar solo una vez
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- PERSONALIZAR AQUÍ ---
+            // Define tu número de WhatsApp con el código de país (sin el + ni espacios)
+            const whatsappNumber = '5491136423263';
+
+            // Define tus productos aquí. Agrega o quita los que necesites.
+            // Asegúrate que las imágenes estén en la misma carpeta o usa URLs completas.
+            const productos = [
+                { id: 1, nombre: 'Torta de Chocolate Intenso', descripcion: 'Bizcochuelo húmedo de chocolate, relleno de ganache y cubierto con más chocolate.', imagen: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=480' },
+                { id: 2, nombre: 'Cheesecake de Frutos Rojos', descripcion: 'Cremoso cheesecake sobre una base de galletas, coronado con una salsa casera de frutos rojos.', imagen: 'https://images.unsplash.com/photo-1565299543923-37dd37887442?q=80&w=480' },
+                { id: 3, nombre: 'Lemon Pie Clásico', descripcion: 'El equilibrio perfecto entre dulce y ácido. Base crocante, crema de limón y merengue italiano.', imagen: './img/Shot Lemon Pie.jpeg' },
+                { id: 4, nombre: 'Torta Brownie con Dulce de Leche', descripcion: 'Base de brownie bien chocolatoso, una capa generosa de dulce de leche y picos de merengue.', imagen: 'https://images.unsplash.com/photo-1627834377411-8da5f4f09a85?q=80&w=480' },
+                { id: 5, nombre: 'Red Velvet Especial', descripcion: 'Suave y aterciopelado bizcocho rojo, con un frosting de queso crema que te enamorará.', imagen: 'https://images.unsplash.com/photo-1616541823720-e4fe33578709?q=80&w=480' },
+                { id: 6, nombre: 'Rogel Tradicional', descripcion: 'Finas capas de masa crocante, unidas con abundante dulce de leche y cubierto de merengue.', imagen: 'https://images.unsplash.com/photo-1607478923986-7a76e98dd4a3?q=80&w=480' },
+            ];
+
+            const productList = document.getElementById('product-list');
+            const cartFab = document.getElementById('cart-fab');
+            const cartCount = document.getElementById('cart-count');
+            const cartModal = document.getElementById('cart-modal');
+            const closeCartBtn = document.getElementById('close-cart-btn');
+            const cartItemsList = document.getElementById('cart-items-list');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const checkoutModal = document.getElementById('checkout-modal');
+            const closeCheckoutBtn = document.getElementById('close-checkout-btn');
+            const checkoutForm = document.getElementById('checkout-form');
+
+            let cart = [];
+
+            // --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
+            function renderProducts() {
+                productList.innerHTML = '';
+                productos.forEach(producto => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.setAttribute('data-aos', 'fade-up');
+                    productCard.innerHTML = `
+                        <img src="${producto.imagen}" alt="${producto.nombre}">
+                        <div class="product-info">
+                            <h3>${producto.nombre}</h3>
+                            <p>${producto.descripcion}</p>
+                            <button class="btn-add-cart" data-id="${producto.id}">Agregar al Pedido</button>
+                        </div>
+                    `;
+                    productList.appendChild(productCard);
+                });
+            }
+
+            // --- FUNCIÓN PARA ACTUALIZAR VISTA DEL CARRITO ---
+            function updateCartView() {
+                cartItemsList.innerHTML = '';
+                let totalItems = 0;
+
+                if (cart.length === 0) {
+                    emptyCartMessage.style.display = 'block';
+                    checkoutBtn.style.display = 'none';
+                } else {
+                    emptyCartMessage.style.display = 'none';
+                    checkoutBtn.style.display = 'block';
+
+                    cart.forEach(item => {
+                        totalItems += item.quantity;
+                        const li = document.createElement('li');
+                        li.textContent = `${item.nombre} (x${item.quantity})`;
+                        cartItemsList.appendChild(li);
+                    });
+                }
+                cartCount.textContent = totalItems;
+            }
+
+            // --- EVENTOS ---
+
+            // Agregar al carrito
+            productList.addEventListener('click', e => {
+                if (e.target.classList.contains('btn-add-cart')) {
+                    const productId = parseInt(e.target.dataset.id);
+                    const product = productos.find(p => p.id === productId);
+
+                    const existingItem = cart.find(item => item.id === productId);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        cart.push({ ...product, quantity: 1 });
+                    }
+                    updateCartView();
+                }
+            });
+
+            // Abrir y cerrar modals
+            cartFab.addEventListener('click', () => cartModal.classList.add('active'));
+            closeCartBtn.addEventListener('click', () => cartModal.classList.remove('active'));
+            checkoutBtn.addEventListener('click', () => {
+                cartModal.classList.remove('active');
+                checkoutModal.classList.add('active');
+            });
+            closeCheckoutBtn.addEventListener('click', () => checkoutModal.classList.remove('active'));
+
+            // Cerrar modal al hacer clic fuera
+            window.addEventListener('click', (e) => {
+                if (e.target == cartModal) cartModal.classList.remove('active');
+                if (e.target == checkoutModal) checkoutModal.classList.remove('active');
+            });
+
+            // Enviar pedido por WhatsApp
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const nombre = document.getElementById('nombre').value;
+                const entrega = document.getElementById('entrega').value;
+                const pago = document.getElementById('pago').value;
+                let anotaciones = document.getElementById('anotaciones').value;
+
+                // Formatear mensaje del pedido
+                let mensaje = `¡Hola Box de Sonrisas! 😊\nQuisiera hacer el siguiente pedido:\n\n`;
+                cart.forEach(item => {
+                    mensaje += `*• ${item.nombre} (x${item.quantity})*\n`;
+                });
+
+                mensaje += `\n*Mis Datos:*\n`;
+                mensaje += `*Nombre:* ${nombre}\n`;
+                mensaje += `*Entrega:* ${entrega}\n`;
+                mensaje += `*Forma de Pago:* ${pago}\n`;
+
+                if (anotaciones) {
+                    mensaje += `*Anotaciones:* ${anotaciones}\n`;
+                }
+
+                mensaje += `\n¡Muchas gracias!`;
+
+                // Crear URL de WhatsApp
+                const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`;
+
+                // Abrir WhatsApp en una nueva pestaña
+                window.open(whatsappURL, '_blank');
+            });
+
+            // --- INICIALIZACIÓN ---
+            renderProducts();
+            updateCartView();
+        });
+    </script>
+</body>
+
+</html>
