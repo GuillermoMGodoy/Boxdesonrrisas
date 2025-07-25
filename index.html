@@ -722,6 +722,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
     <!-- SCRIPT CORREGIDO Y COMPLETO -->
+    <!-- SCRIPT CORREGIDO Y COMPLETO -->
     <script>
         AOS.init({ duration: 800, once: true });
 
@@ -758,6 +759,12 @@
             const addLetterCakeToCartBtn = document.getElementById('add-letter-cake-to-cart');
 
             let cart = [];
+
+            // --- FUNCIÓN CLAVE: Detecta si el usuario está en un dispositivo móvil ---
+            function isMobileDevice() {
+                // Usamos una expresión regular para buscar palabras clave de móviles en el User Agent
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            }
 
             function setupLetterCakeModal() {
                 const letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split('');
@@ -802,7 +809,7 @@
                     productCard.innerHTML = `
                         <div class="product-image-container">
                             ${imagesHTML}
-                            ${navButtonsHTML} 
+                            ${navButtonsHTML}
                         </div>
                         <div class="product-info">
                             <h3>${producto.nombre}</h3>
@@ -915,58 +922,52 @@
                 if (e.target == letterCakeModal) letterCakeModal.classList.remove('active');
             });
 
-            // REEMPLAZAR ESTA SECCIÓN EN TU SCRIPT
+            // --- BLOQUE DE ENVÍO DEL FORMULARIO CON LA NUEVA LÓGICA ---
             checkoutForm.addEventListener('submit', (e) => {
-                e.preventDefault(); // Previene que la página se recargue
-                console.log("Formulario de checkout enviado. Iniciando proceso para WhatsApp Web...");
+                e.preventDefault();
 
                 try {
                     const nombre = document.getElementById('nombre').value;
                     const pago = document.getElementById('pago').value;
                     let anotaciones = document.getElementById('anotaciones').value;
 
-                    // Validamos que el carrito no esté vacío
                     if (cart.length === 0) {
                         alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
                         return;
                     }
 
-                    // Creamos el mensaje
                     let mensaje = `¡Hola Box de Sonrisas! 😊\nQuisiera hacer el siguiente pedido:\n\n`;
                     cart.forEach(item => {
                         mensaje += `*• ${item.nombre} (x${item.quantity})*\n`;
                     });
-
                     mensaje += `\n*Mis Datos:*\n*Nombre:* ${nombre}\n*Forma de Entrega:* Retiro por el local\n*Forma de Pago:* ${pago}\n`;
-
                     if (anotaciones.trim() !== '') {
                         mensaje += `*Anotaciones:* ${anotaciones}\n`;
                     }
                     mensaje += `\n¡Muchas gracias!`;
 
-                    // --- ¡LÍNEA MODIFICADA Y CRUCIAL! ---
-                    // Ahora usamos la URL de web.whatsapp.com para forzar la apertura en el navegador.
-                    const whatsappURL = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(mensaje)}`;
+                    const mensajeCodificado = encodeURIComponent(mensaje);
+                    let whatsappURL;
 
-                    console.log("URL de WhatsApp Web generada:", whatsappURL);
-                    alert("Se abrirá WhatsApp Web en una nueva pestaña para enviar tu pedido.");
-
-                    // Abrimos la URL
-                    const newWindow = window.open(whatsappURL, '_blank');
-
-                    // La verificación de bloqueo de pop-ups sigue siendo importante
-                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                        console.error("¡ERROR! La ventana emergente fue bloqueada por el navegador.");
-                        alert("El navegador bloqueó la ventana de WhatsApp. Por favor, habilita las ventanas emergentes para este sitio e inténtalo de nuevo.");
+                    // Decidimos qué URL usar basándonos en el tipo de dispositivo
+                    if (isMobileDevice()) {
+                        // Es un celular o tablet: abrir la app nativa
+                        whatsappURL = `https://wa.me/${whatsappNumber}?text=${mensajeCodificado}`;
                     } else {
-                        console.log("Ventana de WhatsApp Web abierta correctamente.");
+                        // Es una computadora: forzar la apertura de WhatsApp Web
+                        whatsappURL = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${mensajeCodificado}`;
                     }
 
+                    const newWindow = window.open(whatsappURL, '_blank');
+
+                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                        alert("El navegador bloqueó la ventana de WhatsApp. Por favor, habilita las ventanas emergentes para este sitio e inténtalo de nuevo.");
+                    }
                 } catch (error) {
                     console.error("Ocurrió un error al procesar el pedido:", error);
                     alert("Hubo un error inesperado al preparar tu pedido. Por favor, intenta de nuevo.");
                 }
-            }); ``
+            });
 
             renderDynamicProducts();
             setupLetterCakeModal();
