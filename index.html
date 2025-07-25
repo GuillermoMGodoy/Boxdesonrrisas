@@ -547,7 +547,53 @@
             transform: translateX(-50%) translateY(-5px);
             /* Se desplaza un poco hacia arriba */
         }
+        /* --- INICIO: CORRECCIONES PARA MODAL DE LETTER CAKE --- */
 
+        /* Hacemos que el contenido del modal use Flexbox para posicionar los elementos */
+        #letter-cake-modal-content {
+            display: flex;
+            flex-direction: column;
+            /* Limitamos la altura máxima al 90% de la altura de la pantalla */
+            max-height: 90vh; 
+        }
+
+        /* Este es el contenedor de los selectores que ahora puede tener scroll */
+        .scrollable-content {
+            overflow-y: auto; /* Agrega scroll vertical SÓLO si es necesario */
+            padding: 1rem 0.5rem; /* Espaciado interno para que no se pegue a los bordes */
+            margin: 1rem 0; /* Separa los selectores del título y del botón final */
+        }
+
+        /* Empujamos el botón "Añadir al Pedido" para que se quede abajo */
+        #add-letter-cake-to-cart {
+            margin-top: auto; /* Este es un truco de Flexbox para pegar el botón abajo */
+            width: 100%; /* Hacemos que ocupe todo el ancho */
+        }
+        
+        /* Ajustes específicos para pantallas pequeñas (móviles) */
+        @media (max-width: 480px) {
+            .modal-content {
+                /* Reducimos el padding en móviles para ganar espacio */
+                padding: 1.5rem 1rem;
+            }
+
+            .char-btn {
+                /* Hacemos los botones de letras un poco más pequeños */
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            #letter-cake-input {
+                max-width: 100%;
+            }
+
+            .modal h2 {
+                font-size: 1.5rem; /* Reducimos el tamaño del título */
+                margin-bottom: 0.5rem;
+            }
+        }
+        /* --- FIN: CORRECCIONES PARA MODAL DE LETTER CAKE --- */
         /* --- FIN: Estilos para Social Media --- */
     </style>
 </head>
@@ -676,11 +722,14 @@
         </div>
     </div>
 
+    <!-- REEMPLAZA TU MODAL ACTUAL CON ESTE -->
     <div id="letter-cake-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" id="letter-cake-modal-content">
             <span class="close-btn" id="close-letter-cake-btn">×</span>
             <h2>Personaliza tu Torta</h2>
-            <div class="letter-selector-container">
+            
+            <!-- Contenedor que tendrá scroll si es necesario -->
+            <div class="scrollable-content">
                 <div class="letter-input-group">
                     <label for="letter-cake-input">Letra(s) o Número(s) seleccionados:</label>
                     <input type="text" id="letter-cake-input" placeholder="Ej: A, 18, TE AMO">
@@ -689,8 +738,10 @@
                 <div class="char-selector" id="letter-selector"></div>
                 <h4>Números</h4>
                 <div class="char-selector" id="number-selector"></div>
-                <button class="btn-add-cart" id="add-letter-cake-to-cart">Añadir al Pedido</button>
             </div>
+
+            <!-- El botón ahora está fuera del contenedor de scroll -->
+            <button class="btn-add-cart" id="add-letter-cake-to-cart">Añadir al Pedido</button>
         </div>
     </div>
 
